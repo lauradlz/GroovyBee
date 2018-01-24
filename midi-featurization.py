@@ -62,8 +62,12 @@ def remove_zeros(feature_vec):
     return np.delete(feature_vec, zero_indices, axis=1)
 
 def main():
-    artist = sys.argv[1] 
-    midifiles = glob.glob('./data/*.mid')
+    artist = sys.argv[1]
+    parent_path = ''
+    
+    if sys.argv[2] is not None:
+        parent_path = sys.argv[2]
+    midifiles = glob.glob(parent_path + './data/artist*.mid')
     for midifile in midifiles:   
         audio = midi.read_midifile(midifile)
         instrument_indices = np.zeros(len(audio), dtype=int)
@@ -74,7 +78,7 @@ def main():
             if feature_vec is not None:
                 feature_vec_sanitized = remove_zeros(feature_vec)
                 df = pd.DataFrame(feature_vec_sanitized)
-                file_name = './output/' + str(instrument) + '_' + artist + '_'
+                file_name = parent_path + './output/artist' + str(instrument) + '_' + artist + '_'
 
                 # Check if file exists, and set index appropriately
                 if os.path.isfile(file_name + str(instrument_indices[index]) + '.gz'):
