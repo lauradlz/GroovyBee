@@ -67,6 +67,10 @@ def main():
 
     midifiles = glob.glob(parent_path + '/data/' + artist + '/*.mid')
     for midifile in midifiles:   
+        track_name = midifile[midifile.find('\\') + 1:midifile.find('.mid')]
+
+        print("Processing: " + track_name)
+
         audio = midi.read_midifile(midifile)
         instrument_indices = np.zeros(len(audio), dtype=int)
 
@@ -76,12 +80,12 @@ def main():
             if feature_vec is not None:
                 feature_vec_sanitized = remove_zeros(feature_vec)
                 df = pd.DataFrame(feature_vec_sanitized)
-                file_name = parent_path + '/output/' + artist + '/' + str(instrument) + '_' + artist + '_'
+                file_name = parent_path + '/output/' + artist + '/' + str(instrument) + '_' + artist + '_' + track_name + '_'
 
                 # Check if file/folder exists, and set index appropriately
                 if not os.path.isdir(parent_path + '/output/' + artist + '/'):
                     os.makedirs(parent_path + '/output/' + artist + '/')
-                if os.path.isfile(file_name + str(instrument_indices[index]) + '.gz'):
+                if os.path.isfile(file_name + str(instrument_indices[index]) + '.csv.gz'):
                     instrument_indices[index] += 1
 
                 # Write file to output folder
