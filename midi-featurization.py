@@ -62,8 +62,10 @@ def remove_zeros(feature_vec):
     return np.delete(feature_vec, zero_indices, axis=1)
 
 def main():
-    artist = 'beethoven'
-    parent_path = 'D:/DeepLearning'
+    # artist = 'beethoven'
+    artist = 'tchaikovsky'
+    # parent_path = 'D:/DeepLearning'
+    parent_path = 'C:/Users/Pc Laura/Desktop/Deep_Learning/Mini_Project/GroovyBee'
 
     midifiles = glob.glob(parent_path + '/data/' + artist + '/*.mid')
     for midifile in midifiles:   
