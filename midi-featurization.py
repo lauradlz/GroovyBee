@@ -62,7 +62,7 @@ def remove_zeros(feature_vec):
     return np.delete(feature_vec, zero_indices, axis=1)
 
 def main():
-    artist = 'beethoven'
+    artist = 'mozart'
     parent_path = 'D:/DeepLearning'
 
     midifiles = glob.glob(parent_path + '/data/' + artist + '/*.mid')
