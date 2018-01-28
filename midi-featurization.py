@@ -3,13 +3,6 @@ import pandas as pd
 import os, sys, glob
 import midi
 
-# def trackToMidi(track, midifile):
-#     t = []
-#     t.append(track)
-#     pattern = midi.Pattern(t)
-#     midi.write_midifile("C:/Users/Pc Laura/Desktop/Deep_Learning/Mini_Project/GroovyBee/" + midifile +"-track1.mid",  pattern)
-#     return
-
 def trackToFeature(track):
     totalTicks = 0
     musicalEvents = []
