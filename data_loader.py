@@ -2,8 +2,11 @@ import numpy as np
 import pandas as pd
 import glob
 
-artist = 'mozart'
-parent_path = 'D:/DeepLearning/output/'
+# artist = 'mozart'
+artist = 'tchaikovsky'
+# parent_path = 'D:/DeepLearning/output/'
+parent_path = 'C:/Users/Pc Laura/Desktop/Deep_Learning/Mini_Project/GroovyBee'
+
 instrument = '47'
 
 def load_data(sequence_size, step_size):
