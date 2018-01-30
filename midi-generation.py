@@ -5,10 +5,6 @@ import numpy as np
 
 # Go through the fist column to fin the first not to be played (assuming columns for ticks and roaw for 128 differents notes)
 def decoder(track, grid):
-    if track is None:
-        track = midi.Track()
-        track.append(midi.SetTempoEvent(bpm = 72))
-    
     previousVector = grid[0]
     # Search for first note in the grid
     for noteIndex, note in enumerate(previousVector):
@@ -50,23 +46,24 @@ def postprocess(df):
     return df_copy
 
 def main():
-    midifiles = glob.glob(params.lstm_output + '/*.csv')
+    midifiles = glob.glob(params.lstm_output + '/0*.csv')
     
     # Define midi pattern parameters
     pattern = midi.Pattern()
-    pattern.resolution = 120
-    track = None
+    pattern.resolution = 240
 
     for midifile in midifiles:
+        track = midi.Track()
+        track.append(midi.SetTempoEvent(bpm = np.random.randint(50,72)))
+
         df = pd.read_csv(midifile, header=None)
         df = postprocess(df)
         # Decode output grid from LTSM into one full track of notes:
         track = decoder(track, df.values[:,0:])
-            
-    eot = midi.EndOfTrackEvent(tick = 1) #essential for the track to be turned into a readable midi file
-    track.append(eot)
-    # Translate track into midi file
-    pattern.append(track)
+        eot = midi.EndOfTrackEvent(tick = 1) #essential for the track to be turned into a readable midi file
+        track.append(eot)
+        # Translate track into midi file
+        pattern.append(track)
 
     midi.write_midifile(params.midi_generated + params.artist + ".mid",  pattern)
     

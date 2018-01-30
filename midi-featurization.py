@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import os, sys, glob
 import midi
+import params
 
 def trackToFeature(track):
     totalTicks = 0
@@ -55,12 +56,7 @@ def remove_zeros(feature_vec):
     return np.delete(feature_vec, zero_indices, axis=1)
 
 def main():
-    artist = 'mozart'
-    # artist = 'tchaikovsky'
-    parent_path = 'D:/DeepLearning'
-    # parent_path = 'C:/Users/Pc Laura/Desktop/Deep_Learning/Mini_Project/GroovyBee'
-
-    midifiles = glob.glob(parent_path + '/data/' + artist + '/*.mid')
+    midifiles = glob.glob(params.midi_featurizer + params.artist + '/*.mid')
     for midifile in midifiles:   
         track_name = midifile[midifile.find('\\') + 1:midifile.find('.mid')]
 
@@ -73,16 +69,19 @@ def main():
             # Featurize a single track from the audio file
             instrument, feature_vec = trackToFeature(track)
             if feature_vec is not None:
-                feature_vec_sanitized = remove_zeros(feature_vec)
-                df = pd.DataFrame(feature_vec_sanitized)
-                file_name = parent_path + '/output/' + artist + '/' + str(instrument) + '_' + artist + '_' + track_name + '_'
+                # feature_vec_sanitized = remove_zeros(feature_vec)
+                df = pd.DataFrame(feature_vec)
+                file_name = params.data_loader + params.artist + '/' + str(instrument) + '_' + params.artist + '_' + track_name + '_'
 
                 # Check if file/folder exists, and set index appropriately
-                if not os.path.isdir(parent_path + '/output/' + artist + '/'):
-                    os.makedirs(parent_path + '/output/' + artist + '/')
+                if not os.path.isdir(params.data_loader + params.artist + '/'):
+                    os.makedirs(params.data_loader + params.artist + '/')
                 if os.path.isfile(file_name + str(instrument_indices[index]) + '.csv.gz'):
                     instrument_indices[index] += 1
-
+                
+                df = df.fillna(0)
+                df = df.astype(int)
+                df = df.T
                 # Write file to output folder
                 df.to_csv(file_name + str(instrument_indices[index]) + '.csv.gz', compression='gzip')
             

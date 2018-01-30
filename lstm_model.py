@@ -8,29 +8,42 @@ import torch.optim as optim
 # Define custom LSTM Class
 # Required because PyTorch method of chaining NN layers has issues with LSTMs
 class LSTM_Net(nn.Module):
-    def __init__(self, D_in, hidden_dim, num_layers, D_out, num_sequences):
+    def __init__(self, D_in, hidden_dim, D_out):
         super(LSTM_Net,self).__init__()
         # Assign Hyperparameter values to class variables
         self.hidden_dim = hidden_dim
-        self.num_layers = num_layers
-        self.num_sequences = num_sequences
 
         # Build LSTM NN with 2 Layers using dropout regularizer
-        self.lstm = nn.LSTM(D_in, hidden_dim, num_layers, dropout=0.2)
+        self.lstm_1 = nn.LSTMCell(D_in, hidden_dim)
+        # 2nd Layer for LSTM
+        self.lstm_2 = nn.LSTMCell(hidden_dim, hidden_dim)
         # Add Linear Densely connected NN to transform 512 LSTM nodes to a vector of 128 outputs (pitches)  
         self.linear = nn.Linear(hidden_dim, D_out)
-        # Assign hidden layer shared variables, for gradient computations (backward pass)
-        self.hidden = self.init_hidden()
-
-    def init_hidden(self):
-        return (autograd.Variable(torch.zeros(self.num_layers, self.num_sequences, self.hidden_dim)),
-                autograd.Variable(torch.zeros(self.num_layers, self.num_sequences, self.hidden_dim)))
 
     # Define computation graph for Forward pass
-    def forward(self,x):
-        # LSTM returns cell state and hidden state at time t
-        out, self.hidden = self.lstm(x, self.hidden)
-        # We use total hidden state as input to Linear Layer
-        y_pred = self.linear(out)
-        # Return predictions
-        return y_pred
+    def forward(self, x, future = 0):
+        outputs = []
+        h_1 = autograd.Variable(torch.zeros(x.size(0), self.hidden_dim))
+        c_1 = autograd.Variable(torch.zeros(x.size(0), self.hidden_dim))
+        h_2 = autograd.Variable(torch.zeros(x.size(0), self.hidden_dim))
+        c_2 = autograd.Variable(torch.zeros(x.size(0), self.hidden_dim))
+
+        for i,input_x in enumerate(x.chunk(x.size(1), dim=1)):
+            # LSTM returns cell state and hidden state at time t
+            h_1, c_1 = self.lstm_1(input_x.squeeze(1), (h_1, c_1))
+            h_2, c_2 = self.lstm_2(h_1, (h_2, c_2))
+            # We use total hidden state as input to Linear Layer
+            y_pred = self.linear(h_2)
+            # Return predictions
+            outputs +=[y_pred]
+        
+        for i in range(future):
+            # LSTM returns cell state and hidden state at time t
+            h_1, c_1 = self.lstm_1(y_pred, (h_1, c_1))
+            h_2, c_2 = self.lstm_2(h_1, (h_2, c_2))
+            # We use total hidden state as input to Linear Layer
+            y_pred = self.linear(h_2)
+            # Return predictions
+            outputs += [y_pred]
+        outputs = torch.stack(outputs,1).squeeze(2)
+        return outputs
