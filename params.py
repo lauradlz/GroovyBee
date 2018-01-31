@@ -1,5 +1,5 @@
-instrument = '47'
-artist = 'tchaikovsky'
+instrument = ''
+artist = 'mozart'
 
 # Paths
 # midi_featurizer: folder that contains artist original midi tracks

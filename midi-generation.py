@@ -41,20 +41,22 @@ def postprocess(df):
         col = col / pitches[index]
         col[col>1.1] = 0
         col[col<0.9] = 0
-        col = col * pitches[index]
+        col[col<1.1] = 1
+        col[col>0.9] = 1
+        col = col * 100
         df_copy[index] = col
     return df_copy
 
 def main():
-    midifiles = glob.glob(params.lstm_output + '/0*.csv')
+    midifiles = glob.glob(params.lstm_output + '/*.csv')
     
     # Define midi pattern parameters
     pattern = midi.Pattern()
-    pattern.resolution = 240
+    pattern.resolution = 70
 
     for midifile in midifiles:
         track = midi.Track()
-        track.append(midi.SetTempoEvent(bpm = np.random.randint(50,72)))
+        track.append(midi.SetTempoEvent(bpm = np.random.randint(10,20)))
 
         df = pd.read_csv(midifile, header=None)
         df = postprocess(df)

@@ -69,8 +69,8 @@ def main():
             # Featurize a single track from the audio file
             instrument, feature_vec = trackToFeature(track)
             if feature_vec is not None:
-                # feature_vec_sanitized = remove_zeros(feature_vec)
-                df = pd.DataFrame(feature_vec)
+                feature_vec_sanitized = remove_zeros(feature_vec)
+                df = pd.DataFrame(feature_vec_sanitized)
                 file_name = params.data_loader + params.artist + '/' + str(instrument) + '_' + params.artist + '_' + track_name + '_'
 
                 # Check if file/folder exists, and set index appropriately
