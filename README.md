@@ -7,3 +7,4 @@ We plan to use generative modelling algorithms in Machine Learning, to synthesiz
 # Instructions for Aalto Notebooks
 1. conda install -c intel mkl conda
 2. conda install pytorch-cpu torchvision -c pytorch 
+3. pip install git+https://github.com/vishnubob/python-midi@feature/python3
